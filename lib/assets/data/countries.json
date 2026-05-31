@@ -1,0 +1,47 @@
+[
+  {
+    "code": "GB",
+    "name": "United Kingdom",
+    "flag": "🇬🇧",
+    "currency_code": "GBP",
+    "currency_symbol": "£",
+    "currency_name": "British Pound",
+    "phone_prefix": "+44"
+  },
+  {
+    "code": "NG",
+    "name": "Nigeria",
+    "flag": "🇳🇬",
+    "currency_code": "NGN",
+    "currency_symbol": "₦",
+    "currency_name": "Nigerian Naira",
+    "phone_prefix": "+234"
+  },
+  {
+    "code": "US",
+    "name": "United States",
+    "flag": "🇺🇸",
+    "currency_code": "USD",
+    "currency_symbol": "$",
+    "currency_name": "US Dollar",
+    "phone_prefix": "+1"
+  },
+  {
+    "code": "GH",
+    "name": "Ghana",
+    "flag": "🇬🇭",
+    "currency_code": "GHS",
+    "currency_symbol": "₵",
+    "currency_name": "Ghanaian Cedi",
+    "phone_prefix": "+233"
+  },
+  {
+    "code": "KE",
+    "name": "Kenya",
+    "flag": "🇰🇪",
+    "currency_code": "KES",
+    "currency_symbol": "KSh",
+    "currency_name": "Kenyan Shilling",
+    "phone_prefix": "+254"
+  }
+]
