@@ -1,7 +1,7 @@
 class AppConstants {
   AppConstants._();
 
-  // API Base URL (mocked — swap for real Laravel base)
+  // API Base URL
   static const apiBaseUrl = 'https://api.froggytalk.app/api';
 
   // Shared Pref Keys
@@ -12,12 +12,12 @@ class AppConstants {
   static const mockDelay = Duration(milliseconds: 900);
   static const mockDelayLong = Duration(milliseconds: 1400);
 
-  // Payment methods
+  // payment methods
   static const paymentMethods = [
-    {'id': 'card', 'label': 'Debit / Credit Card', 'icon': '💳'},
-    {'id': 'bank', 'label': 'Bank Transfer', 'icon': '🏦'},
-    {'id': 'apple_pay', 'label': 'Apple Pay', 'icon': '🍎'},
-    {'id': 'google_pay', 'label': 'Google Pay', 'icon': '🟡'},
+    {'id': 'card', 'label': 'Debit / Credit Card'},
+    {'id': 'bank', 'label': 'Bank Transfer'},
+    {'id': 'apple_pay', 'label': 'Apple Pay'},
+    {'id': 'google_pay', 'label': 'Google Pay'},
   ];
 
   // Top-up presets by currency
