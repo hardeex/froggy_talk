@@ -36,10 +36,17 @@ class ActivityListItem extends StatelessWidget {
               color: _iconBg(activity.type),
               borderRadius: BorderRadius.circular(12),
             ),
+            // child: Center(
+            //   child: Text(
+            //     activity.type.icon,
+            //     style: const TextStyle(fontSize: 20),
+            //   ),
+            // ),
             child: Center(
-              child: Text(
-                activity.type.icon,
-                style: const TextStyle(fontSize: 20),
+              child: Icon(
+                _typeIcon(activity.type),
+                color: _typeIconColor(activity.type),
+                size: 20,
               ),
             ),
           ),
@@ -51,9 +58,9 @@ class ActivityListItem extends StatelessWidget {
               children: [
                 Text(
                   activity.type.label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontSize: 14),
                 ),
                 const Gap(2),
                 Row(
@@ -109,6 +116,23 @@ class ActivityListItem extends StatelessWidget {
     ActivityStatus.success => AppColors.success,
     ActivityStatus.failed => AppColors.error,
     ActivityStatus.pending => AppColors.pending,
+  };
+
+  // Color _iconBg(ActivityType type) => switch (type) {
+  //   ActivityType.topUp => AppColors.success.withOpacity(0.12),
+  //   ActivityType.callCreditUsed => AppColors.primary.withOpacity(0.12),
+  //   ActivityType.paymentSent => AppColors.accent.withOpacity(0.12),
+  // };
+  IconData _typeIcon(ActivityType type) => switch (type) {
+    ActivityType.topUp => Icons.arrow_downward_rounded,
+    ActivityType.callCreditUsed => Icons.call_rounded,
+    ActivityType.paymentSent => Icons.arrow_upward_rounded,
+  };
+
+  Color _typeIconColor(ActivityType type) => switch (type) {
+    ActivityType.topUp => AppColors.success,
+    ActivityType.callCreditUsed => AppColors.primary,
+    ActivityType.paymentSent => AppColors.accent,
   };
 
   Color _iconBg(ActivityType type) => switch (type) {

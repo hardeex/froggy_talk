@@ -49,13 +49,17 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
       return;
     }
 
-    final result = await ref.read(walletProvider.notifier).topUp(
-      TopupRequest(amount: amount, paymentMethodId: _selectedPaymentId!),
-    );
+    final result = await ref
+        .read(walletProvider.notifier)
+        .topUp(
+          TopupRequest(amount: amount, paymentMethodId: _selectedPaymentId!),
+        );
 
-    setState(() => _step = result == TopUpResult.success
-        ? _TopupStep.success
-        : _TopupStep.failed);
+    setState(
+      () => _step = result == TopUpResult.success
+          ? _TopupStep.success
+          : _TopupStep.failed,
+    );
   }
 
   void _showSnack(String msg) {
@@ -74,7 +78,8 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
     final walletState = ref.watch(walletProvider);
     final currency = user.country.currencyCode;
     final symbol = user.country.currencySymbol;
-    final presets = AppConstants.topupPresets[currency] ?? [10.0, 20.0, 50.0, 100.0];
+    final presets =
+        AppConstants.topupPresets[currency] ?? [10.0, 20.0, 50.0, 100.0];
 
     return Scaffold(
       appBar: AppBar(
@@ -86,7 +91,11 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
       ),
       body: switch (_step) {
         _TopupStep.select => _buildSelectStep(
-            currency, symbol, presets, walletState),
+          currency,
+          symbol,
+          presets,
+          walletState,
+        ),
         _TopupStep.success => _buildResultStep(isSuccess: true, symbol: symbol),
         _TopupStep.failed => _buildResultStep(isSuccess: false, symbol: symbol),
       },
@@ -137,16 +146,12 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                 ),
               ],
             ),
-          )
-              .animate()
-              .fadeIn(duration: 300.ms),
+          ).animate().fadeIn(duration: 300.ms),
           const Gap(28),
           Text(
             'Select Amount',
             style: Theme.of(context).textTheme.titleMedium,
-          )
-              .animate()
-              .fadeIn(delay: 80.ms),
+          ).animate().fadeIn(delay: 80.ms),
           const Gap(12),
           // Preset grid
           GridView.builder(
@@ -161,8 +166,7 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
             itemCount: presets.length,
             itemBuilder: (_, i) {
               final amount = presets[i];
-              final isSelected =
-                  !_useCustomAmount && _selectedAmount == amount;
+              final isSelected = !_useCustomAmount && _selectedAmount == amount;
               return GestureDetector(
                 onTap: () => setState(() {
                   _selectedAmount = amount;
@@ -199,9 +203,7 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                 ),
               );
             },
-          )
-              .animate()
-              .fadeIn(delay: 120.ms),
+          ).animate().fadeIn(delay: 120.ms),
           const Gap(12),
           // Custom amount toggle
           GestureDetector(
@@ -222,8 +224,11 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: _useCustomAmount
-                      ? const Icon(Icons.check_rounded,
-                          size: 14, color: Colors.white)
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        )
                       : null,
                 ),
                 const Gap(8),
@@ -242,8 +247,9 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
             const Gap(12),
             TextField(
               controller: _customAmountCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Amount ($currency)',
@@ -260,67 +266,69 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
           Text(
             'Payment Method',
             style: Theme.of(context).textTheme.titleMedium,
-          )
-              .animate()
-              .fadeIn(delay: 160.ms),
+          ).animate().fadeIn(delay: 160.ms),
           const Gap(12),
           ...AppConstants.paymentMethods.map((method) {
-            final isSelected = _selectedPaymentId == method['id'];
-            return GestureDetector(
-              onTap: () =>
-                  setState(() => _selectedPaymentId = method['id'] as String),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.surfaceBorder,
-                    width: isSelected ? 1.5 : 1,
+                final isSelected = _selectedPaymentId == method['id'];
+                return GestureDetector(
+                  onTap: () => setState(
+                    () => _selectedPaymentId = method['id'] as String,
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      method['icon'] as String,
-                      style: const TextStyle(fontSize: 22),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
-                    const Gap(12),
-                    Text(
-                      method['label'] as String,
-                      style: TextStyle(
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.textPrimary,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                            : AppColors.surfaceBorder,
+                        width: isSelected ? 1.5 : 1,
                       ),
                     ),
-                    const Spacer(),
-                    if (isSelected)
-                      const Icon(
-                        Icons.check_circle_rounded,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                  ],
-                ),
-              ),
-            );
-          }).toList()
-            ..add(
-              const SizedBox.shrink()
-                  .animate()
-                  .fadeIn(delay: 200.ms),
-            ),
+                    child: Row(
+                      children: [
+                        // Text(
+                        //   method['icon'] as String,
+                        //   style: const TextStyle(fontSize: 22),
+                        // ),
+                        Icon(
+                          method['icon'] as IconData,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
+                          size: 22,
+                        ),
+                        const Gap(12),
+                        Text(
+                          method['label'] as String,
+                          style: TextStyle(
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        const Spacer(),
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList()
+              as List<Widget>,
           const Gap(12),
           // Summary
           if (_effectiveAmount != null && _effectiveAmount! > 0)
@@ -329,9 +337,7 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.25),
-                ),
+                border: Border.all(color: AppColors.primary.withOpacity(0.25)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -342,15 +348,13 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                   ),
                   Text(
                     formatter.format(_effectiveAmount!),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.primary,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: AppColors.primary),
                   ),
                 ],
               ),
-            )
-                .animate()
-                .fadeIn(duration: 200.ms),
+            ).animate().fadeIn(duration: 200.ms),
           const Gap(24),
           AppButton(
             label: 'Confirm Top-Up',
@@ -388,23 +392,19 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                   style: const TextStyle(fontSize: 40),
                 ),
               ),
-            )
-                .animate()
-                .scale(
-                  begin: const Offset(0.5, 0.5),
-                  end: const Offset(1, 1),
-                  duration: 400.ms,
-                  curve: Curves.elasticOut,
-                ),
+            ).animate().scale(
+              begin: const Offset(0.5, 0.5),
+              end: const Offset(1, 1),
+              duration: 400.ms,
+              curve: Curves.elasticOut,
+            ),
             const Gap(24),
             Text(
               isSuccess ? 'Top-Up Successful!' : 'Top-Up Failed',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: isSuccess ? AppColors.success : AppColors.error,
               ),
-            )
-                .animate()
-                .fadeIn(delay: 150.ms),
+            ).animate().fadeIn(delay: 150.ms),
             const Gap(12),
             if (isSuccess && walletState.wallet != null)
               Text(
@@ -414,17 +414,13 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                   color: AppColors.primary,
                   fontWeight: FontWeight.w700,
                 ),
-              )
-                  .animate()
-                  .fadeIn(delay: 250.ms),
+              ).animate().fadeIn(delay: 250.ms),
             if (!isSuccess)
               Text(
                 'Your payment could not be processed.\nPlease check your payment details and try again.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
-              )
-                  .animate()
-                  .fadeIn(delay: 250.ms),
+              ).animate().fadeIn(delay: 250.ms),
             const Gap(36),
             AppButton(
               label: isSuccess ? 'Back to Wallet' : 'Try Again',
@@ -435,18 +431,14 @@ class _TopupScreenState extends ConsumerState<TopupScreen> {
                   setState(() => _step = _TopupStep.select);
                 }
               },
-            )
-                .animate()
-                .fadeIn(delay: 350.ms),
+            ).animate().fadeIn(delay: 350.ms),
             if (!isSuccess) ...[
               const Gap(12),
               AppButton(
                 label: 'Back to Wallet',
                 onPressed: () => context.pop(),
                 variant: AppButtonVariant.ghost,
-              )
-                  .animate()
-                  .fadeIn(delay: 400.ms),
+              ).animate().fadeIn(delay: 400.ms),
             ],
           ],
         ),

@@ -9,6 +9,7 @@ import '../../../data/models/requests.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/state_widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -44,14 +45,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
-    final success = await ref.read(authStateProvider.notifier).register(
-      RegisterRequest(
-        fullName: _nameCtrl.text.trim(),
-        email: _emailCtrl.text.trim(),
-        phone: _phoneCtrl.text.trim(),
-        countryCode: _selectedCountry!.code,
-      ),
-    );
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .register(
+          RegisterRequest(
+            fullName: _nameCtrl.text.trim(),
+            email: _emailCtrl.text.trim(),
+            phone: _phoneCtrl.text.trim(),
+            countryCode: _selectedCountry!.code,
+          ),
+        );
 
     if (success && mounted) {
       // Load wallet immediately after registration
@@ -62,9 +65,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            color: Color(0xFF111827),
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.surfaceElevated,
+        backgroundColor: Colors.white,
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -90,32 +103,33 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Gap(24),
-                _buildHeader(),
-                const Gap(40),
-                _buildNameField(),
-                const Gap(16),
-                _buildEmailField(),
-                const Gap(16),
-                _buildPhoneField(),
-                const Gap(16),
-                _buildCountrySelector(countriesAsync),
-                const Gap(24),
-                _buildTermsCheckbox(),
-                const Gap(32),
-                AppButton(
-                  label: 'Create Account',
-                  onPressed: _submit,
-                  isLoading: authState.isLoading,
-                ),
-                const Gap(24),
-                _buildSignInPrompt(),
-                const Gap(16),
-              ]
-                  .animate(interval: 60.ms)
-                  .fadeIn(duration: 400.ms)
-                  .slideY(begin: 0.15, end: 0),
+              children:
+                  [
+                        const Gap(24),
+                        _buildHeader(),
+                        const Gap(40),
+                        _buildNameField(),
+                        const Gap(16),
+                        _buildEmailField(),
+                        const Gap(16),
+                        _buildCountrySelector(countriesAsync),
+                        const Gap(16),
+                        _buildPhoneField(),
+                        const Gap(24),
+                        _buildTermsCheckbox(),
+                        const Gap(32),
+                        AppButton(
+                          label: 'Create Account',
+                          onPressed: _submit,
+                          isLoading: authState.isLoading,
+                        ),
+                        const Gap(24),
+                        _buildSignInPrompt(),
+                        const Gap(16),
+                      ]
+                      .animate(interval: 60.ms)
+                      .fadeIn(duration: 400.ms)
+                      .slideY(begin: 0.15, end: 0),
             ),
           ),
         ),
@@ -127,18 +141,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Logo mark
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            gradient: AppColors.cardGradient,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: const Center(
-            child: Text('🐸', style: TextStyle(fontSize: 26)),
-          ),
-        ),
+        // logo
+        // Container(
+        //   width: 120,
+        //   height: 120,
+        //   decoration: BoxDecoration(
+        //     color: const Color(0xFFF0FDF4),
+        //     borderRadius: BorderRadius.circular(16),
+        //     border: Border.all(color: const Color(0xFFBBF7D0)),
+        //   ),
+        //   padding: const EdgeInsets.all(10),
+        //   child: SvgPicture.asset(
+        //     'assets/images/froggy_talk_logo.svg',
+        //     fit: BoxFit.contain,
+        //   ),
+        // ),
         const Gap(20),
         Text(
           'Join FroggyTalk',
@@ -167,7 +184,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'Full name is required.';
-        if (v.trim().split(' ').length < 2) return 'Please enter first and last name.';
+        if (v.trim().split(' ').length < 2)
+          return 'Please enter first and last name.';
         return null;
       },
     );
@@ -187,26 +205,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(v.trim())) {
           return 'Please enter a valid email address.';
         }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildPhoneField() {
-    return TextFormField(
-      controller: _phoneCtrl,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        labelText: 'Phone Number',
-        prefixIcon: const Icon(Icons.phone_outlined),
-        prefixText: _selectedCountry != null
-            ? '${_selectedCountry!.phonePrefix} '
-            : null,
-        prefixStyle: const TextStyle(color: AppColors.textSecondary),
-      ),
-      validator: (v) {
-        if (v == null || v.trim().isEmpty) return 'Phone number is required.';
-        if (v.trim().length < 7) return 'Please enter a valid phone number.';
         return null;
       },
     );
@@ -243,6 +241,26 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 
+  Widget _buildPhoneField() {
+    return TextFormField(
+      controller: _phoneCtrl,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        labelText: 'Phone Number',
+        prefixIcon: const Icon(Icons.phone_outlined),
+        prefixText: _selectedCountry != null
+            ? '${_selectedCountry!.phonePrefix} '
+            : null,
+        prefixStyle: const TextStyle(color: AppColors.textSecondary),
+      ),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) return 'Phone number is required.';
+        if (v.trim().length < 7) return 'Please enter a valid phone number.';
+        return null;
+      },
+    );
+  }
+
   Widget _buildTermsCheckbox() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,9 +282,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text.rich(
             TextSpan(
               text: 'I agree to the ',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               children: [
                 TextSpan(
                   text: 'Terms of Service',
@@ -298,14 +316,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       child: Text.rich(
         TextSpan(
           text: 'Already have an account? ',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           children: [
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () => context.push('/login'),
                 child: const Text(
                   'Sign In',
                   style: TextStyle(
@@ -364,7 +382,10 @@ class _CountryDropdown extends StatelessWidget {
               child: selected == null
                   ? const Text(
                       'Select your country',
-                      style: TextStyle(color: AppColors.textMuted, fontSize: 15),
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 15,
+                      ),
                     )
                   : Row(
                       children: [

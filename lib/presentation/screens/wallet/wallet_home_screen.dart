@@ -11,6 +11,7 @@ import '../../widgets/common/activity_list_item.dart';
 import '../../widgets/common/wallet_shimmer.dart';
 import '../../widgets/common/state_widgets.dart';
 import '../../widgets/common/app_button.dart';
+import '../../../data/models/wallet_activity.dart';
 
 class WalletHomeScreen extends ConsumerStatefulWidget {
   const WalletHomeScreen({super.key});
@@ -39,14 +40,8 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Text(
-              '🐸 ',
-              style: const TextStyle(fontSize: 20),
-            ),
-            Text(
-              'FroggyTalk',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(' ', style: const TextStyle(fontSize: 20)),
+            Text('FroggyTalk', style: Theme.of(context).textTheme.titleLarge),
           ],
         ),
         actions: [
@@ -84,12 +79,11 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
                 child: WalletLoadingShimmer(),
               )
             : walletState.error != null && walletState.wallet == null
-                ? ErrorStateWidget(
-                    message: walletState.error!.message,
-                    onRetry: () =>
-                        ref.read(walletProvider.notifier).loadWallet(),
-                  )
-                : _buildContent(walletState, user),
+            ? ErrorStateWidget(
+                message: walletState.error!.message,
+                onRetry: () => ref.read(walletProvider.notifier).loadWallet(),
+              )
+            : _buildContent(walletState, user),
       ),
       bottomNavigationBar: _buildBottomBar(),
     );
@@ -106,25 +100,24 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
-                text: '${user.firstName} 👋',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                text:
+                    '${user.firstName[0].toUpperCase()}${user.firstName.substring(1).toLowerCase()} ',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),
-        )
-            .animate()
-            .fadeIn(duration: 300.ms),
+        ).animate().fadeIn(duration: 300.ms),
         const Gap(16),
         // Wallet Card
         if (walletState.wallet != null)
           WalletCard(
-            wallet: walletState.wallet!,
-            userName: user.fullName,
-            countryName: user.country.name,
-            countryFlag: user.country.flag,
-          )
+                wallet: walletState.wallet!,
+                userName: user.fullName,
+                countryName: user.country.name,
+                countryFlag: user.country.flag,
+              )
               .animate()
               .fadeIn(delay: 100.ms, duration: 400.ms)
               .slideY(begin: 0.08, end: 0),
@@ -137,9 +130,7 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
             // Reload after returning from topup
           },
           icon: const Icon(Icons.add_rounded, size: 20),
-        )
-            .animate()
-            .fadeIn(delay: 200.ms, duration: 300.ms),
+        ).animate().fadeIn(delay: 200.ms, duration: 300.ms),
         const Gap(28),
         // Quick stats
         _buildQuickStats(walletState),
@@ -157,9 +148,7 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
-        )
-            .animate()
-            .fadeIn(delay: 300.ms, duration: 300.ms),
+        ).animate().fadeIn(delay: 300.ms, duration: 300.ms),
         const Gap(12),
         _buildActivityList(walletState.activities),
       ],
@@ -170,27 +159,43 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
     if (walletState.wallet == null) return const SizedBox.shrink();
     final activities = walletState.activities as List;
     final successTopUps = activities
-        .where((a) =>
-            a.type.name == 'topUp' && a.status.name == 'success')
+        // .where((a) =>
+        //     a.type.name == 'topUp' && a.status.name == 'success')
+        .where(
+          (a) =>
+              a.type == ActivityType.topUp &&
+              a.status == ActivityStatus.success,
+        )
         .length;
 
     return Row(
       children: [
+        // _StatCard(
+        //   label: 'Successful Top-Ups',
+        //   value: '$successTopUps',
+        //   icon: '✅',
+        // ),
+        // const Gap(12),
+        // _StatCard(
+        //   label: 'Currency',
+        //   value: walletState.wallet!.currencyCode,
+        //   icon: '💱',
+        // ),
         _StatCard(
           label: 'Successful Top-Ups',
           value: '$successTopUps',
-          icon: '✅',
+          icon: Icons.check_circle_outline_rounded,
+          iconColor: AppColors.success,
         ),
         const Gap(12),
         _StatCard(
           label: 'Currency',
           value: walletState.wallet!.currencyCode,
-          icon: '💱',
+          icon: Icons.currency_exchange_rounded,
+          iconColor: AppColors.primary,
         ),
       ],
-    )
-        .animate()
-        .fadeIn(delay: 250.ms, duration: 300.ms);
+    ).animate().fadeIn(delay: 250.ms, duration: 300.ms);
   }
 
   Widget _buildActivityList(List activities) {
@@ -198,7 +203,8 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
       return const EmptyStateWidget(
         emoji: '📭',
         title: 'No transactions yet',
-        subtitle: 'Your activity will appear here once you make your first top-up or call.',
+        subtitle:
+            'Your activity will appear here once you make your first top-up or call.',
       );
     }
 
@@ -207,13 +213,44 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
         for (int i = 0; i < activities.length; i++) ...[
           ActivityListItem(activity: activities[i])
               .animate()
-              .fadeIn(delay: Duration(milliseconds: 350 + i * 60), duration: 300.ms)
+              .fadeIn(
+                delay: Duration(milliseconds: 350 + i * 60),
+                duration: 300.ms,
+              )
               .slideX(begin: 0.05, end: 0),
           if (i < activities.length - 1) const Gap(10),
         ],
       ],
     );
   }
+
+  // Widget _buildBottomBar() {
+  //   return Container(
+  //     padding: EdgeInsets.only(
+  //       left: 20,
+  //       right: 20,
+  //       bottom: MediaQuery.of(context).padding.bottom + 12,
+  //       top: 12,
+  //     ),
+  //     decoration: const BoxDecoration(
+  //       color: AppColors.surface,
+  //       border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         _NavItem(
+  //           icon: Icons.account_balance_wallet_rounded,
+  //           label: 'Wallet',
+  //           active: true,
+  //         ),
+  //         _NavItem(icon: Icons.phone_rounded, label: 'Calls', active: false),
+  //         _NavItem(icon: Icons.send_rounded, label: 'Send', active: false),
+  //         _NavItem(icon: Icons.person_rounded, label: 'Profile', active: false),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildBottomBar() {
     return Container(
@@ -225,18 +262,59 @@ class _WalletHomeScreenState extends ConsumerState<WalletHomeScreen> {
       ),
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.surfaceBorder),
-        ),
+        border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _NavItem(icon: Icons.account_balance_wallet_rounded, label: 'Wallet', active: true),
-          _NavItem(icon: Icons.phone_rounded, label: 'Calls', active: false),
-          _NavItem(icon: Icons.send_rounded, label: 'Send', active: false),
-          _NavItem(icon: Icons.person_rounded, label: 'Profile', active: false),
+          _NavItem(
+            icon: Icons.account_balance_wallet_rounded,
+            label: 'Wallet',
+            active: true,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.phone_rounded,
+            label: 'Calls',
+            active: false,
+            onTap: () => _showComingSoon('Calls'),
+          ),
+          _NavItem(
+            icon: Icons.send_rounded,
+            label: 'Send',
+            active: false,
+            onTap: () => _showComingSoon('Send Money'),
+          ),
+          _NavItem(
+            icon: Icons.person_rounded,
+            label: 'Profile',
+            active: false,
+            onTap: () => _showProfileSheet(
+              context,
+              ref.read(authStateProvider).user!.fullName,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showComingSoon(String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$feature coming soon.',
+          style: const TextStyle(
+            color: Color(0xFF111827),
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.white,
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -289,11 +367,13 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.icon,
+    required this.iconColor,
   });
 
   final String label;
   final String value;
-  final String icon;
+  final IconData icon;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +388,7 @@ class _StatCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 20)),
+            Icon(icon, color: iconColor, size: 22),
             const Gap(8),
             Text(
               value,
@@ -326,37 +406,81 @@ class _StatCard extends StatelessWidget {
   }
 }
 
+// class _NavItem extends StatelessWidget {
+//   const _NavItem({
+//     required this.icon,
+//     required this.label,
+//     required this.active,
+//   });
+
+//   final IconData icon;
+//   final String label;
+//   final bool active;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         Icon(
+//           icon,
+//           color: active ? AppColors.primary : AppColors.textMuted,
+//           size: 24,
+//         ),
+//         const Gap(4),
+//         Text(
+//           label,
+//           style: TextStyle(
+//             color: active ? AppColors.primary : AppColors.textMuted,
+//             fontSize: 11,
+//             fontWeight: active ? FontWeight.w700 : FontWeight.normal,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
     required this.label,
     required this.active,
+    required this.onTap,
   });
 
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: active ? AppColors.primary : AppColors.textMuted,
-          size: 24,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: active ? AppColors.primary : AppColors.textMuted,
+              size: 24,
+            ),
+            const Gap(4),
+            Text(
+              label,
+              style: TextStyle(
+                color: active ? AppColors.primary : AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: active ? FontWeight.w700 : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
-        const Gap(4),
-        Text(
-          label,
-          style: TextStyle(
-            color: active ? AppColors.primary : AppColors.textMuted,
-            fontSize: 11,
-            fontWeight: active ? FontWeight.w700 : FontWeight.normal,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

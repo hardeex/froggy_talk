@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -13,11 +15,35 @@ class AppConstants {
   static const mockDelayLong = Duration(milliseconds: 1400);
 
   // payment methods
-  static const paymentMethods = [
-    {'id': 'card', 'label': 'Debit / Credit Card'},
-    {'id': 'bank', 'label': 'Bank Transfer'},
-    {'id': 'apple_pay', 'label': 'Apple Pay'},
-    {'id': 'google_pay', 'label': 'Google Pay'},
+
+  // static const paymentMethods = [
+  //   {'id': 'card', 'label': 'Debit / Credit Card', 'icon': '💳'},
+  //   {'id': 'bank', 'label': 'Bank Transfer', 'icon': '🏦'},
+  //   {'id': 'apple_pay', 'label': 'Apple Pay', 'icon': '🍎'},
+  //   {'id': 'google_pay', 'label': 'Google Pay', 'icon': '🟡'},
+  // ];
+
+  static const List<Map<String, dynamic>> paymentMethods = [
+    {
+      'id': 'card',
+      'label': 'Debit / Credit Card',
+      'icon': Icons.credit_card_rounded,
+    },
+    {
+      'id': 'bank',
+      'label': 'Bank Transfer',
+      'icon': Icons.account_balance_rounded,
+    },
+    {
+      'id': 'apple_pay',
+      'label': 'Apple Pay',
+      'icon': Icons.phone_iphone_rounded,
+    },
+    {
+      'id': 'google_pay',
+      'label': 'Google Pay',
+      'icon': Icons.g_mobiledata_rounded,
+    },
   ];
 
   // Top-up presets by currency

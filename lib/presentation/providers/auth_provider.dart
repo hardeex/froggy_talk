@@ -8,11 +8,7 @@ import 'core_providers.dart';
 // ── Auth State ────────────────────────────────────────────────────────────────
 
 class AuthState {
-  const AuthState({
-    this.user,
-    this.isLoading = false,
-    this.error,
-  });
+  const AuthState({this.user, this.isLoading = false, this.error});
 
   final AppUser? user;
   final bool isLoading;
@@ -41,6 +37,23 @@ class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() => const AuthState();
 
+  Future<bool> login(String email, String password) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final user = await ref
+          .read(authRepositoryProvider)
+          .login(email, password);
+      state = AuthState(user: user);
+      return true;
+    } on AppException catch (e) {
+      state = state.copyWith(isLoading: false, error: e);
+      return false;
+    } catch (_) {
+      state = state.copyWith(isLoading: false, error: const UnknownException());
+      return false;
+    }
+  }
+
   Future<bool> register(RegisterRequest request) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
@@ -51,10 +64,7 @@ class AuthNotifier extends Notifier<AuthState> {
       state = state.copyWith(isLoading: false, error: e);
       return false;
     } catch (_) {
-      state = state.copyWith(
-        isLoading: false,
-        error: const UnknownException(),
-      );
+      state = state.copyWith(isLoading: false, error: const UnknownException());
       return false;
     }
   }
@@ -64,11 +74,13 @@ class AuthNotifier extends Notifier<AuthState> {
   void logout() => state = const AuthState();
 }
 
-final authStateProvider =
-    NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authStateProvider = NotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);
 
 // ── Countries Provider ─────────────────────────────────────────────────────────
 
 final countriesProvider = FutureProvider<List<Country>>((ref) async {
-  return ref.read(authRepositoryProvider).getCountries() as Future<List<Country>>;
+  return ref.read(authRepositoryProvider).getCountries()
+      as Future<List<Country>>;
 });

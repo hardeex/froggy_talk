@@ -42,7 +42,8 @@ class MockApiDataSource {
     final countries = await getCountries();
     final country = countries.firstWhere(
       (c) => c.code == req.countryCode,
-      orElse: () => throw const ValidationException('Invalid country selected.'),
+      orElse: () =>
+          throw const ValidationException('Invalid country selected.'),
     );
 
     final userId = _uuid.v4();
@@ -75,6 +76,29 @@ class MockApiDataSource {
     return user;
   }
 
+  // ── POST /api/login ───────────────────────────────────────────────────────────
+  Future<AppUser> login(String email, String password) async {
+    await Future.delayed(AppConstants.mockDelayLong);
+
+    if (_currentUser == null) {
+      throw const ApiException(
+        'No account found with that email address.',
+        statusCode: 401,
+      );
+    }
+
+    if (_currentUser!.email.toLowerCase() != email.toLowerCase()) {
+      throw const ApiException('Invalid email or password.', statusCode: 401);
+    }
+
+    // Password is mocked — any non-empty string passes
+    if (password.isEmpty) {
+      throw const ValidationException('Password is required.');
+    }
+
+    return _currentUser!;
+  }
+
   // ── GET /api/countries ────────────────────────────────────────────────────
 
   Future<List<Country>> getCountries() async {
@@ -90,7 +114,8 @@ class MockApiDataSource {
 
   Future<Wallet> getWallet() async {
     await Future.delayed(AppConstants.mockDelay);
-    if (_wallet == null) throw const ApiException('Wallet not found.', statusCode: 404);
+    if (_wallet == null)
+      throw const ApiException('Wallet not found.', statusCode: 404);
     return _wallet!;
   }
 
@@ -108,9 +133,12 @@ class MockApiDataSource {
   ) async {
     await Future.delayed(AppConstants.mockDelayLong);
 
-    if (_wallet == null) throw const ApiException('Wallet not found.', statusCode: 404);
+    if (_wallet == null)
+      throw const ApiException('Wallet not found.', statusCode: 404);
     if (req.amount <= 0) {
-      throw const ValidationException('Top-up amount must be greater than zero.');
+      throw const ValidationException(
+        'Top-up amount must be greater than zero.',
+      );
     }
 
     // Simulate ~10% chance of payment failure for realism

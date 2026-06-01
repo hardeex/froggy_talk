@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:froggytalk/data/models/country.dart';
-import 'package:froggytalk/data/models/wallet.dart';
-import 'package:froggytalk/data/models/wallet_activity.dart';
+import 'package:froggytalk_assessment/data/models/country.dart';
+import 'package:froggytalk_assessment/data/models/wallet.dart';
+import 'package:froggytalk_assessment/data/models/wallet_activity.dart';
 
 // ── Helper Fixtures ────────────────────────────────────────────────────────────
 
@@ -10,25 +10,24 @@ Country _country({
   String name = 'Nigeria',
   String currencyCode = 'NGN',
   String currencySymbol = '₦',
-}) =>
-    Country(
-      code: code,
-      name: name,
-      flag: '🇳🇬',
-      currencyCode: currencyCode,
-      currencySymbol: currencySymbol,
-      currencyName: 'Nigerian Naira',
-      phonePrefix: '+234',
-    );
+}) => Country(
+  code: code,
+  name: name,
+  flag: '🇳🇬',
+  currencyCode: currencyCode,
+  currencySymbol: currencySymbol,
+  currencyName: 'Nigerian Naira',
+  phonePrefix: '+234',
+);
 
 Wallet _wallet({double balance = 0.0, String currencyCode = 'NGN'}) => Wallet(
-      id: 'wallet-1',
-      userId: 'user-1',
-      balance: balance,
-      currencyCode: currencyCode,
-      currencySymbol: '₦',
-      lastTopUpDate: null,
-    );
+  id: 'wallet-1',
+  userId: 'user-1',
+  balance: balance,
+  currencyCode: currencyCode,
+  currencySymbol: '₦',
+  lastTopUpDate: null,
+);
 
 // ── Country ────────────────────────────────────────────────────────────────────
 
@@ -74,8 +73,11 @@ void main() {
 
       for (final entry in mapping.entries) {
         final country = _country(code: entry.key, currencyCode: entry.value);
-        expect(country.currencyCode, entry.value,
-            reason: '${entry.key} should map to ${entry.value}');
+        expect(
+          country.currencyCode,
+          entry.value,
+          reason: '${entry.key} should map to ${entry.value}',
+        );
       }
     });
   });
@@ -134,16 +136,15 @@ void main() {
       ActivityType type = ActivityType.topUp,
       ActivityStatus status = ActivityStatus.success,
       double amount = 20.0,
-    }) =>
-        WalletActivity(
-          id: 'act-1',
-          type: type,
-          status: status,
-          amount: amount,
-          currencySymbol: '₦',
-          description: 'Test activity',
-          createdAt: DateTime(2024, 1, 15),
-        );
+    }) => WalletActivity(
+      id: 'act-1',
+      type: type,
+      status: status,
+      amount: amount,
+      currencySymbol: '₦',
+      description: 'Test activity',
+      createdAt: DateTime(2024, 1, 15),
+    );
 
     test('ActivityType.topUp is a credit', () {
       expect(ActivityType.topUp.isCredit, isTrue);
