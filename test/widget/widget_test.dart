@@ -361,10 +361,10 @@ void main() {
   group('ErrorStateWidget', () {
     testWidgets('renders error message', (tester) async {
       await tester.pumpWidget(
-        _wrapWidget(const ErrorStateWidget(message: 'Something went wrong')),
+        _wrapWidget(const ErrorStateWidget(message: 'Network request failed')),
       );
 
-      expect(find.text('Something went wrong'), findsOneWidget);
+      expect(find.text('Network request failed'), findsOneWidget);
     });
 
     testWidgets('shows retry button when onRetry is provided', (tester) async {
