@@ -179,4 +179,7 @@ flutter test test/widget/
 
 ## Download APK
 
-| `Download the APK File` | https://drive.google.com/file/d/1VuH7UQrt0D8pK0YId2NlioHUMzgY-hVb/view |
+Pre-built release APK (Android arm64):  
+[Download from Google Drive](https://drive.google.com/file/d/1VuH7UQrt0D8pK0YId2NlioHUMzgY-hVb/view)
+
+> Tested on Android 12+. Alternatively, build from source with `flutter build apk --release`.
