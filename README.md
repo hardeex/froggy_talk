@@ -174,3 +174,9 @@ flutter test test/widget/
 | `equatable ^2`          | Value equality on models                 |
 | `uuid ^4`               | ID generation in mock datasource         |
 | `gap ^3`                | Readable spacing in layouts              |
+
+---
+
+## Download APK
+
+| `Download the APK File` | https://drive.google.com/file/d/1VuH7UQrt0D8pK0YId2NlioHUMzgY-hVb/view |
